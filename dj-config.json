@@ -1,0 +1,9 @@
+{
+	"commands": [
+		{
+			"name": "migrate",
+			"help": "Does the migration dance",
+			"execute": "./manage.py makemigrations && ./manage.py migrate"
+		}
+	]
+}
