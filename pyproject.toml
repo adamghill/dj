@@ -4,17 +4,20 @@ version = "0.1.0"
 description = ""
 authors = ["Adam Hill <adamghill@yahoo.com>"]
 include = ["dj-config.json"]
+repository = "https://github.com/adamghill/dj"
 
 [tool.poetry.dependencies]
 python = "^3.6"
 click = "^7.0"
 "delegator.py" = "^0.1.1"
+attrs = "^19.1"
+colorama = "^0.4.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
 
 [tool.poetry.scripts]
-dj = 'dj:main.run'
+dj = 'dj:__main__.run'
 
 [build-system]
 requires = ["poetry>=0.12"]
