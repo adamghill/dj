@@ -1,6 +1,8 @@
 # Why?
 It is available everywhere if you install via `pip`, has cute aliases defined in a JSON file (`.dj-config.json`) per project, will run as many commands as you want, and defaults to Django management commands if an alias cannot be found.
 
+Note that calling a long-running processes (e.g. `runserver`) will prevent any other commands from being run.
+
 # Example .dj-config.json
 ```
 {

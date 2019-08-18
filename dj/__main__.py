@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 import json
-import os
-import subprocess
 from pathlib import Path
-import random
 
 import attr
 import click
-import delegator
+
+from . import process_runner
 
 DJ_CONFIG_FILE_NAME = ".dj-config.json"
 
@@ -97,75 +95,7 @@ def run(command_names, config_path, list, dry_run, verbose):
             django_command_name = f"python manage.py {command_name}"
             command = Command(execute=django_command_name, name=django_command_name)
 
-        _run_process(command, dry_run)
-
-
-def _get_random_emoji(emojis):
-    random_int = random.randint(0, len(emojis) - 1)
-    return emojis[random_int]
-
-
-def _run_process(command, dry_run):
-    """
-    Runs a particule command.
-    Returns whether the process ran successfully.
-    """
-    command_name = f"'{command.execute}'"
-
-    if command.name:
-        command_name = f"'{command.name}' ({command.execute})"
-
-    click.secho(f"Running {command_name}... ", fg="yellow", nl=False)
-
-    if dry_run:
-        click.secho("¯\_(ツ)_/¯", fg="yellow")
-        return True
-
-    should_block_process = True
-
-    # Default the Django runserver command to not block
-    if "runserver" in command.name or "runserver" in command.execute:
-        should_block_process = False
-
-    if command.long_running is not None:
-        should_block_process = not command.long_running
-
-    if should_block_process:
-        process = delegator.run(command.execute, block=True)
-
-        if process.ok:
-            click.secho(f"success! 🚀", fg="green")
-            click.secho(process.out)
-        else:
-            click.secho(f"failed. 😞", fg="red", err=True)
-            click.secho(process.err)
-            click.secho(process.out)
-
-        return process.ok
-    else:
-        emoji = _get_random_emoji(["🍿", "👟", "⏳", "💿", "💡"])
-        click.secho(emoji, nl=True)
-        env = dict(os.environ, **{"PYTHONUNBUFFERED": "1"})
-
-        process = subprocess.Popen(
-            command.execute,
-            stdout=subprocess.PIPE,
-            encoding="utf8",
-            shell=True,
-            universal_newlines=True,
-            bufsize=0,
-            env=env,
-        )
-
-        while True:
-            out = process.stdout.readline()
-
-            if out == "" and process.poll() is not None:
-                break
-            if out:
-                click.secho(out.strip())
-
-        return True
+        process_runner.run(command, dry_run)
 
 
 def _get_config_path(config_filename, verbose):
