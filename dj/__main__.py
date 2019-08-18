@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 import json
+import os
+import subprocess
 from pathlib import Path
 
 import attr
 import click
 import delegator
 
-
-DJ_CONFIG_FILE_NAME = "dj-config.json"
+DJ_CONFIG_FILE_NAME = ".dj-config.json"
 
 
 @attr.s
@@ -17,8 +18,9 @@ class Command(object):
     """
 
     execute = attr.ib()
-    name = attr.ib(default="")
+    name = attr.ib()
     help = attr.ib(default="")
+    long_running = attr.ib(default=None)
 
 
 @attr.s
@@ -38,23 +40,49 @@ class Config(object):
     "--config",
     "config_path",
     default=DJ_CONFIG_FILE_NAME,
-    help="Location of config file",
+    help="Specify the location of the config file (defaults to .dj-config in the current directory)",
     type=click.Path(),
 )
 @click.option(
-    "-l", "--list", default=False, help="List the commands that would be executed"
+    "-l",
+    "--list",
+    default=False,
+    help="List the available custom commands and exits",
+    is_flag=True,
+)
+@click.option(
+    "-d",
+    "--dry_run",
+    default=False,
+    help="Shows what commands would be run without actually running them",
+    is_flag=True,
 )
 @click.option(
     "-v", "--verbose", default=False, help="Print out more information", is_flag=True
 )
-def run(command_names, config_path, list, verbose):
+def run(command_names, config_path, list, dry_run, verbose):
     """
-    Run commands quickly and easily.
+    Run commands like ⚡
     """
     config = _get_config(config_path, verbose)
 
     if list:
-        click.echo("Commands passed in: " + ", ".join(command_names))
+        for command in config.commands:
+            if command.name:
+                click.secho(command.name, fg="green", nl=False)
+                click.secho(" (", nl=False)
+
+            click.secho(command.execute, nl=False)
+
+            if command.name:
+                click.secho(")", nl=False)
+
+            if command.help:
+                click.secho(f"\n{command.help}\n")
+            else:
+                click.secho(f"\n")
+
+        return
 
     for command_name in command_names:
         command = None
@@ -66,29 +94,70 @@ def run(command_names, config_path, list, verbose):
 
         if not command:
             django_command_name = f"python manage.py {command_name}"
-            command = Command(execute=django_command_name)
+            command = Command(execute=django_command_name, name=django_command_name)
 
-        _run_process(command)
+        _run_process(command, dry_run)
 
 
-def _run_process(command):
+def _run_process(command, dry_run):
     """
     Runs a particule command.
     Returns whether the process ran successfully.
     """
-    click.secho(
-        f"Running '{command.name or command.execute}'... ", fg="yellow", nl=False
-    )
-    process = delegator.run(command.execute, block=True)
+    command_name = f"'{command.execute}'"
 
-    if process.ok:
-        click.secho(f"success! 🚀", fg="green")
-        click.secho(process.out)
+    if command.name:
+        command_name = f"'{command.name}' ({command.execute})"
+
+    click.secho(f"Running {command_name}... ", fg="yellow", nl=False)
+
+    if dry_run:
+        click.secho("¯\_(ツ)_/¯", fg="yellow")
+        return True
+
+    should_block_process = True
+
+    # Default the Django runserver command to not block
+    if "runserver" in command.name or "runserver" in command.execute:
+        should_block_process = False
+
+    if command.long_running is not None:
+        should_block_process = not command.long_running
+
+    if should_block_process:
+        process = delegator.run(command.execute, block=True)
+
+        if process.ok:
+            click.secho(f"success! 🚀", fg="green")
+            click.secho(process.out)
+        else:
+            click.secho(f"failed. 😞", fg="red", err=True)
+            click.secho(process.err)
+            click.secho(process.out)
+
+        return process.ok
     else:
-        click.secho(f"failed. 😞", fg="red", err=True)
-        click.secho(process.err)
+        env = dict(os.environ, **{"PYTHONUNBUFFERED": "1"})
 
-    return process.ok
+        process = subprocess.Popen(
+            command.execute,
+            stdout=subprocess.PIPE,
+            encoding="utf8",
+            shell=True,
+            universal_newlines=True,
+            bufsize=0,
+            env=env,
+        )
+
+        while True:
+            out = process.stdout.readline()
+
+            if out == "" and process.poll() is not None:
+                break
+            if out:
+                click.secho(out.strip())
+
+        return True
 
 
 def _get_config_path(config_filename, verbose):
@@ -122,10 +191,26 @@ def _get_config(config_filename, verbose):
                 dj_config = json.loads(dj_config_text)
 
                 for dj_command in dj_config.get("commands", []):
+                    command_name = dj_command.get("name")
+                    execute = dj_command.get("execute")
+
+                    if not command_name:
+                        if verbose:
+                            click.secho("Missing command name", fg="red")
+
+                        continue
+
+                    if not execute:
+                        if verbose:
+                            click.secho("Missing execute", fg="red")
+
+                        continue
+
                     command = Command(
-                        name=dj_command.get("name"),
+                        name=command_name,
                         help=dj_command.get("help"),
-                        execute=dj_command.get("execute"),
+                        execute=execute,
+                        long_running=dj_command.get("long_running"),
                     )
 
                     config.commands.append(command)

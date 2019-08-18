@@ -1,0 +1,20 @@
+{
+	"commands": [
+		{
+			"name": "m",
+			"help": "Does the migration dance",
+			"execute": "./manage.py makemigrations && ./manage.py migrate"
+		},
+		{
+			"name": "r",
+			"help": "Runserver",
+			"execute": "./manage.py runserver",
+			"long_running": true
+		},
+		{
+			"name": "ls",
+			"help": "ls",
+			"execute": "ls"
+		}
+	]
+}
