@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 from pathlib import Path
+import random
 
 import attr
 import click
@@ -99,6 +100,11 @@ def run(command_names, config_path, list, dry_run, verbose):
         _run_process(command, dry_run)
 
 
+def _get_random_emoji(emojis):
+    random_int = random.randint(0, len(emojis) - 1)
+    return emojis[random_int]
+
+
 def _run_process(command, dry_run):
     """
     Runs a particule command.
@@ -137,6 +143,8 @@ def _run_process(command, dry_run):
 
         return process.ok
     else:
+        emoji = _get_random_emoji(["🍿", "👟", "⏳", "💿", "💡"])
+        click.secho(emoji, nl=True)
         env = dict(os.environ, **{"PYTHONUNBUFFERED": "1"})
 
         process = subprocess.Popen(
