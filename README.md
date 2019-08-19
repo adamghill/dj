@@ -22,6 +22,8 @@ Note that calling a long-running processes (e.g. `runserver`) will prevent any o
 }
 ```
 
+`dj` will look in the current directory for `.dj-config.json` first and then in `~/.dj-config.json`.
+
 # Basic arguments and options
 - `dj --help` to see all of the options
 - `dj --list` to see all of the available custom commands
