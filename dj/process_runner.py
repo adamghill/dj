@@ -56,6 +56,12 @@ def _is_long_running_process(command):
     if command.long_running is not None:
         is_long_running_process = command.long_running
 
+    if is_long_running_process and command.expectations:
+        click.secho(
+            "Expectations and long-running processes cannot be specified at the same time",
+            fg="red",
+        )
+
     return is_long_running_process
 
 
@@ -114,7 +120,18 @@ def _run_long_running_process(command):
 
 
 def _run_regular_process(command):
-    process = delegator.run(command.execute, block=True)
+    should_block_process = True
+
+    if command.expectations:
+        should_block_process = False
+
+    process = delegator.run(command.execute, block=should_block_process, timeout=30)
+
+    if command.expectations and not should_block_process:
+        for expectation in command.expectations:
+            process.expect(expectation.expect)
+            process.send(expectation.input)
+            process.block()
 
     if process.ok:
         emoji = _get_random_item(SUCCESS_EMOJIS)

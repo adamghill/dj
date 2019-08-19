@@ -11,6 +11,12 @@ DJ_CONFIG_FILE_NAME = ".dj-config.json"
 
 
 @attr.s
+class Expectation(object):
+    expect = attr.ib()
+    input = attr.ib()
+
+
+@attr.s
 class Command(object):
     """
     Represents a command with all of the pieces that are required.
@@ -20,6 +26,7 @@ class Command(object):
     name = attr.ib()
     help = attr.ib(default="")
     long_running = attr.ib(default=None)
+    expectations = attr.ib(default=[])
 
 
 @attr.s
@@ -144,11 +151,26 @@ def _get_config(config_filename, verbose):
 
                         continue
 
+                    # TODO: Move this to static method on object
+                    expectations_data = dj_command.get("expectations", [])
+                    expectations = []
+
+                    for expectation_data in expectations_data:
+                        expect = expectation_data.get("expect")
+                        input = expectation_data.get("input")
+
+                        if expect and input:
+                            expectation = Expectation(expect=expect, input=input)
+                            expectations.append(expectation)
+
+                    print("expectations", expectations)
+
                     command = Command(
                         name=command_name,
                         help=dj_command.get("help"),
                         execute=execute,
                         long_running=dj_command.get("long_running"),
+                        expectations=expectations,
                     )
 
                     config.commands.append(command)
