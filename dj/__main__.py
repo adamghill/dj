@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 import click
-from dj import objects, process_runner
+from dj import __version__, objects, process_runner
 
 DJ_CONFIG_FILE_NAME = ".dj-config.json"
 
@@ -36,6 +36,7 @@ DJ_CONFIG_FILE_NAME = ".dj-config.json"
 @click.option(
     "-v", "--verbose", default=False, help="Print out more information", is_flag=True
 )
+@click.version_option(version=__version__)
 def run(command_names, config_path, list, dry_run, verbose):
     """
     Run commands with 🔥
