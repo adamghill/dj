@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "dj-command"
 version = "0.3.0"
-description = "Run Django management commands with a simple `dj {command_name}`. Can also use aliases for commands defined in a simple config file."
+description = "Run commands with `dj {command_name}`. Use aliases defined in a simple config file or defaults to Django management commands."
 authors = ["Adam Hill <adamghill@yahoo.com>"]
 include = [".dj-config.json"]
 repository = "https://github.com/adamghill/dj"

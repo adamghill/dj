@@ -1,12 +1,18 @@
 # Why?
 It is available everywhere if you install via `pip`, has cute aliases defined in a JSON file (`.dj-config.json`) per project, will run as many commands as you want, and defaults to Django management commands if an alias cannot be found.
 
-Note that calling a long-running processes (e.g. `runserver`) will prevent any other commands from being run.
+Commands can be run sequentially by `dj` (e.g. `dj makemigrations migrate`). However, calling a long-running process (e.g. `dj runserver`) will prevent any other commands from being run. For example, `dj runserver migrate` will never run the `migrate` command because `runserver` will block the process.
 
 # Example .dj-config.json
 ```
 {
 	"commands": [
+		{
+			"name": "nice name for the command",
+			"help": "help text for the command (optional)",  
+			"execute": "shell command to run",
+			"long_running": true  // whether the process is expected to execute and exit or run forever (optional, and defaults to `false`)
+		},
 		{
 			"name": "m",
 			"help": "Does the migration dance",
@@ -22,7 +28,7 @@ Note that calling a long-running processes (e.g. `runserver`) will prevent any o
 }
 ```
 
-`dj` will look in the current directory for `.dj-config.json` first and then in `~/.dj-config.json`.
+`dj` will look in the current directory for `.dj-config.json` and then in `~/`, unless the `--config` argument is used to specify a particular file location.
 
 # Basic arguments and options
 - `dj --help` to see all of the options
@@ -34,7 +40,7 @@ Note that calling a long-running processes (e.g. `runserver`) will prevent any o
 1. Clone the repo
 1. Run the source locally: `poetry run python dj`
 1. Test the source: `poetry run pytest`
-1. Build and install locally: `poetry build && pip3 install --user --upgrade --force-reinstall dist/dj_command-0.1.0-py3-none-any.whl`
+1. Build and install locally: `poetry build && pip3 install --user --upgrade --force-reinstall dist/dj_command-0.3.0-py3-none-any.whl`
 1. Test with `~/.local/bin/dj migrate`
 1. Publish the source to pypi: `poetry publish --build --username USERNAME --password PASSWORD`
 
