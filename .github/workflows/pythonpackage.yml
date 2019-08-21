@@ -4,6 +4,7 @@ on:
   push:
     branches:
     - master
+    - test-non-dev-version
 
 jobs:
   build:
