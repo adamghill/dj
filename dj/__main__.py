@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import os
 from pathlib import Path
 
 import click
@@ -37,7 +38,7 @@ DJ_CONFIG_FILE_NAME = ".dj-config.json"
 )
 def run(command_names, config_path, list, dry_run, verbose):
     """
-    Run commands like ⚡
+    Run commands with 🔥
     """
     config = _get_config(config_path, verbose)
 
@@ -66,6 +67,16 @@ def run(command_names, config_path, list, dry_run, verbose):
             if _command.name == command_name:
                 command = _command
                 break
+
+        if (
+            command
+            and command.requires_virtualenv
+            and not os.environ.get("VIRTUAL_ENV")
+        ):
+            if verbose:
+                click.secho("Virtual environment for {command.name} could not be found")
+
+            return
 
         if not command and not config.disable_django_management_command:
             django_command_name = f"python manage.py {command_name}"
@@ -111,8 +122,8 @@ def _get_config(config_filename, verbose):
                 )
 
                 for dj_command in dj_config.get("commands", []):
-                    command_name = dj_command.get("name")
-                    execute = dj_command.get("execute")
+                    command_name = dj_command.get("name", "").strip()
+                    execute = dj_command.get("execute", "").strip()
 
                     if not command_name:
                         if verbose:
@@ -128,9 +139,10 @@ def _get_config(config_filename, verbose):
 
                     command = objects.Command(
                         name=command_name,
-                        help=dj_command.get("help"),
+                        help=dj_command.get("help", "").strip(),
                         execute=execute,
                         long_running=dj_command.get("long_running"),
+                        requires_virtualenv=dj_command.get("requires_virtualenv"),
                     )
 
                     config.commands.append(command)

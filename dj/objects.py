@@ -10,7 +10,8 @@ class Command(object):
     execute = attr.ib()
     name = attr.ib()
     help = attr.ib(default="")
-    long_running = attr.ib(default=None)
+    long_running = attr.ib(default=False)
+    requires_virtualenv = attr.ib(default=False)
 
 
 @attr.s

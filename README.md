@@ -12,6 +12,7 @@ Commands can be run sequentially by `dj` (e.g. `dj makemigrations migrate`). How
 			"help": "help text for the command (optional)",  
 			"execute": "shell command to run",
 			"long_running": false  // whether the process is expected to execute and exit or run forever (optional, defaults to false)
+			"requires_virtualenv": false  // check that a virtual environment is activated before running the command (optional, defaults to false)
 		},
 		{
 			"name": "m",
