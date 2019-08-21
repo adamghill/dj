@@ -20,7 +20,7 @@ def run(command, dry_run):
     """
     command_name = f"'{command.execute}'"
 
-    if command.name:
+    if command.name and command.name != command.execute:
         command_name = f"'{command.name}' ({command.execute})"
 
     click.secho(f"Running {command_name}... ", fg="yellow", nl=False)
