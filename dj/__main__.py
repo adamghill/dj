@@ -83,7 +83,8 @@ def run(command_names, config_file_path, list, dry_run, verbose):
             return
 
         if not command and not config.disable_django_management_command:
-            django_command_name = f"python manage.py {command_name}"
+            python_interpreter = config.python_interpreter or "python"
+            django_command_name = f"{python_interpreter} manage.py {command_name}"
             command = objects.Command(
                 execute=django_command_name, name=django_command_name
             )

@@ -18,15 +18,18 @@ Commands can be run sequentially by `dj` (e.g. `dj makemigrations migrate`). How
 			"name": "m",
 			"help": "Does the migration dance",
 			"execute": "./manage.py makemigrations && ./manage.py migrate",
+			"requires_virtualenv": true
 		},
 		{
 			"name": "r",
 			"help": "Runserver",
 			"execute": "./manage.py runserver",
-			"long_running": true
+			"long_running": true,
+			"requires_virtualenv": true
 		}
 	],
 	"disable_django_management_command": false  // prevent falling back to a Django management command cannot be found (optional, defaults to false)
+	"python_interpreter": "python"  // Specify the Python interpreter (optional, defaults to "python")
 }
 ```
 

@@ -10,6 +10,7 @@
 			"name": "r",
 			"help": "Runs all the servers",
 			"execute": "./manage.py runserver",
+			"requires_virtualenv": true,
 			"long_running": true
 		},
 		{
@@ -21,7 +22,10 @@
 			"name": "up",
 			"help": "Up all the things",
 			"execute": "pip3 install -r requirements/development.txt && ./manage.py migrate && ./manage.py runserver",
+			"requires_virtualenv": true,
 			"long_running": true
 		}
-	]
+	],
+	"disable_django_management_command": false,
+	"python_interpreter": "python"
 }

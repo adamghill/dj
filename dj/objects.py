@@ -47,6 +47,7 @@ class Config(object):
     commands = attr.ib(default=[])
     file_path = attr.ib(default="")
     disable_django_management_command = attr.ib(default=False)
+    python_interpreter = attr.ib(default="")
 
     @classmethod
     def from_path(cls, path, verbose):
@@ -75,6 +76,7 @@ class Config(object):
             config.disable_django_management_command = dj_config.get(
                 "disable_django_management_command"
             )
+            config.python_interpreter = dj_config.get("python_interpreter")
 
             for dj_command in dj_config.get("commands", []):
                 try:
