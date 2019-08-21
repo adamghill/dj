@@ -91,7 +91,7 @@ def run(command_names, config_path, list, dry_run, verbose):
                 command = _command
                 break
 
-        if not command:
+        if not command and not config.disable_django_management_command:
             django_command_name = f"python manage.py {command_name}"
             command = Command(execute=django_command_name, name=django_command_name)
 
@@ -127,6 +127,9 @@ def _get_config(config_filename, verbose):
             with path.open() as dj_config_file:
                 dj_config_text = dj_config_file.read()
                 dj_config = json.loads(dj_config_text)
+                config.disable_django_management_command = dj_config.get(
+                    "disable_django_management_command"
+                )
 
                 for dj_command in dj_config.get("commands", []):
                     command_name = dj_command.get("name")

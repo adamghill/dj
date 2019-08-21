@@ -14,7 +14,8 @@
 		{
 			"name": "ls",
 			"help": "ls",
-			"execute": "ls"
+			"execute": "ls",
+			"requires_virtualenv": false
 		},
 		{
 			"name": "up",
