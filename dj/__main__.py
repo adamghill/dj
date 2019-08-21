@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import json
 import os
 from pathlib import Path
 
@@ -34,7 +33,11 @@ DJ_CONFIG_FILE_NAME = ".dj-config.json"
     is_flag=True,
 )
 @click.option(
-    "-v", "--verbose", default=False, help="Print out more verbose information.", is_flag=True
+    "-v",
+    "--verbose",
+    default=False,
+    help="Print out more verbose information.",
+    is_flag=True,
 )
 @click.version_option(version=__version__)
 def run(command_names, config_path, list, dry_run, verbose):
@@ -111,55 +114,20 @@ def _get_config(config_filename, verbose):
     Loads the config file and serializes it into a Config object.
     """
     config_file_path = _get_config_path(config_filename, verbose)
-    config = objects.Config(config_file_path=str(config_file_path))
 
-    if config_file_path:
-        try:
-            with config_file_path.open() as dj_config_file:
-                dj_config_text = dj_config_file.read()
-                dj_config = json.loads(dj_config_text)
-                config.disable_django_management_command = dj_config.get(
-                    "disable_django_management_command"
-                )
+    try:
+        config = objects.Config.from_file_path(config_file_path, verbose)
 
-                for dj_command in dj_config.get("commands", []):
-                    command_name = dj_command.get("name", "").strip()
-                    execute = dj_command.get("execute", "").strip()
-
-                    if not command_name:
-                        if verbose:
-                            click.secho("Missing command name", fg="red")
-
-                        continue
-
-                    if not execute:
-                        if verbose:
-                            click.secho("Missing execute", fg="red")
-
-                        continue
-
-                    command = objects.Command(
-                        name=command_name,
-                        help=dj_command.get("help", "").strip(),
-                        execute=execute,
-                        long_running=dj_command.get("long_running"),
-                        requires_virtualenv=dj_command.get("requires_virtualenv"),
-                    )
-
-                    config.commands.append(command)
-
-            if verbose:
-                click.secho(f"Using {config_file_path} config file")
-        except FileNotFoundError:
-            if verbose:
-                click.secho(f"A {DJ_CONFIG_FILE_NAME} could not be found.", fg="yellow")
-        except json.decoder.JSONDecodeError:
-            if verbose:
-                click.secho(
-                    f"{config_file_path} does not appear to be valid JSON.", fg="yellow"
-                )
-
-    return config
+        return config
+    except AssertionError as ex:
+        click.secho(f"Error: {ex}", fg="red")
+        exit()
+    except FileNotFoundError:
+        if verbose:
+            click.secho(f"A {DJ_CONFIG_FILE_NAME} could not be found.", fg="yellow")
+    except Exception as ex:
+        click.secho(f"Error: {ex}", fg="red")
+        exit()
 
 
 if __name__ == "__main__":

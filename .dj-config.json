@@ -15,7 +15,7 @@
 		{
 			"name": "ls",
 			"help": "Lists all the files, of course",
-			"execute": "ls",
+			"execute": "ls"
 		},
 		{
 			"name": "up",
