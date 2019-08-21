@@ -42,7 +42,7 @@ Commands can be run sequentially by `dj` (e.g. `dj makemigrations migrate`). How
 1. Clone the repo
 1. Run the source locally: `poetry run python dj`
 1. Test the source: `poetry run pytest`
-1. Build and install locally: `poetry build && pip3 install --user --upgrade --force-reinstall dist/dj_command-0.3.0-py3-none-any.whl`
+1. Build and install locally: `poetry build && pip3 install --user --force-reinstall .`
 1. Test with `~/.local/bin/dj migrate`
 1. Publish the source to pypi: `poetry publish --build --username USERNAME --password PASSWORD`
 
