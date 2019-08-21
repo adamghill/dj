@@ -28,3 +28,12 @@ jobs:
     - name: Test with pytest
       run: |
         poetry run pytest
+    - name: Black Code Formatter
+      uses: lgeiger/black-action@v1.0.1
+    - name: Python style check
+      uses: bulv1ne/python-style-check@v0.3
+    - name: Python Syntax Checker
+      uses: cclauss/Find-Python-syntax-errors-action@Add-more-flake8-tests
+
+
+
