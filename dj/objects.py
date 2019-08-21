@@ -22,10 +22,10 @@ class Command(object):
         Creates a command object from a data dictionary.
         """
         command_name = data.get("name", "").strip()
-        assert command_name, "Missing command_name key"
+        assert command_name, "Missing command_name key."
 
         execute = data.get("execute", "").strip()
-        assert execute, f"Missing execute key for {command_name}"
+        assert execute, f"Missing execute key for {command_name}."
 
         command = Command(
             name=command_name,
@@ -49,18 +49,18 @@ class Config(object):
     disable_django_management_command = attr.ib(default=False)
 
     @classmethod
-    def from_file_path(cls, file_path, verbose):
+    def from_path(cls, path, verbose):
         """
         Creates a config object based on a file path.
         """
-        assert file_path is not None, "Config file path is not valid"
+        assert path, "Config file path is not valid."
 
         if verbose:
-            click.secho(f"Using {file_path} config file")
+            click.secho(f"Using {path} config file")
 
-        config = Config(file_path=str(file_path))
+        config = Config(file_path=str(path))
 
-        with file_path.open() as dj_config_file:
+        with path.open() as dj_config_file:
             dj_config_text = dj_config_file.read()
             dj_config = {}
 
@@ -68,7 +68,7 @@ class Config(object):
                 dj_config = json.loads(dj_config_text)
             except json.decoder.JSONDecodeError:
                 click.secho(
-                    f"{file_path} does not appear to be valid JSON.", fg="yellow"
+                    f"{path} does not appear to be valid JSON.", fg="yellow"
                 )
                 return config
 

@@ -5,7 +5,7 @@ from pathlib import Path
 import click
 from dj import __version__, objects, process_runner
 
-DJ_CONFIG_FILE_NAME = ".dj-config.json"
+DJ_CONFIG_FILE_PATH = ".dj-config.json"
 
 
 @click.command()
@@ -13,8 +13,8 @@ DJ_CONFIG_FILE_NAME = ".dj-config.json"
 @click.option(
     "-c",
     "--config",
-    "config_path",
-    default=DJ_CONFIG_FILE_NAME,
+    "config_file_path",
+    default=DJ_CONFIG_FILE_PATH,
     help="Specify the location of the config file (defaults to .dj-config.json in the current directory).",
     type=click.Path(),
 )
@@ -40,11 +40,11 @@ DJ_CONFIG_FILE_NAME = ".dj-config.json"
     is_flag=True,
 )
 @click.version_option(version=__version__)
-def run(command_names, config_path, list, dry_run, verbose):
+def run(command_names, config_file_path, list, dry_run, verbose):
     """
     Run commands with 🔥
     """
-    config = _get_config(config_path, verbose)
+    config = _get_config(config_file_path, verbose)
 
     if list:
         for command in config.commands:
@@ -92,42 +92,37 @@ def run(command_names, config_path, list, dry_run, verbose):
             process_runner.run(command, dry_run)
 
 
-def _get_config_path(config_filename, verbose):
+def _get_config_path(config_file_path, verbose):
     """
     Gets the path of the config file based on the default locations.
     """
-    paths = [Path(config_filename), Path.home().joinpath(DJ_CONFIG_FILE_NAME)]
+    paths = [Path(config_file_path), Path.home().joinpath(DJ_CONFIG_FILE_PATH)]
 
-    if paths[0] != Path(DJ_CONFIG_FILE_NAME):
-        paths.insert(1, Path(DJ_CONFIG_FILE_NAME))
+    if paths[0] != Path(DJ_CONFIG_FILE_PATH):
+        paths.insert(1, Path(DJ_CONFIG_FILE_PATH))
 
     for path in paths:
         if path.exists():
             return path
 
         if verbose:
-            click.secho(f"{path} does not exist.")
+            click.secho(f"{path} does not exist.", fg="yellow")
 
 
-def _get_config(config_filename, verbose):
+def _get_config(config_file_path, verbose):
     """
     Loads the config file and serializes it into a Config object.
     """
-    config_file_path = _get_config_path(config_filename, verbose)
+    config_path = _get_config_path(config_file_path, verbose)
 
-    try:
-        config = objects.Config.from_file_path(config_file_path, verbose)
-
-        return config
-    except AssertionError as ex:
-        click.secho(f"Error: {ex}", fg="red")
-        exit()
-    except FileNotFoundError:
+    if not config_path:
         if verbose:
-            click.secho(f"A {DJ_CONFIG_FILE_NAME} could not be found.", fg="yellow")
-    except Exception as ex:
-        click.secho(f"Error: {ex}", fg="red")
-        exit()
+            click.secho("Config file could not be found.", fg="yellow")
+
+        # Default to an empty config because a config file could not be found.
+        return objects.Config()
+
+    return objects.Config.from_path(config_path, verbose)
 
 
 if __name__ == "__main__":
