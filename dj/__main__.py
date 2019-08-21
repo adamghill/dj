@@ -1,35 +1,12 @@
 #!/usr/bin/env python3
 import json
+import os
 from pathlib import Path
 
-import attr
 import click
-
-from . import process_runner
+from dj import objects, process_runner
 
 DJ_CONFIG_FILE_NAME = ".dj-config.json"
-
-
-@attr.s
-class Command(object):
-    """
-    Represents a command with all of the pieces that are required.
-    """
-
-    execute = attr.ib()
-    name = attr.ib()
-    help = attr.ib(default="")
-    long_running = attr.ib(default=None)
-
-
-@attr.s
-class Config(object):
-    """
-    Stores config which is basically just a list of commands.
-    """
-
-    commands = attr.ib(default=[])
-    path = attr.ib(default="")
 
 
 @click.command()
@@ -61,7 +38,7 @@ class Config(object):
 )
 def run(command_names, config_path, list, dry_run, verbose):
     """
-    Run commands like ⚡
+    Run commands with 🔥
     """
     config = _get_config(config_path, verbose)
 
@@ -91,9 +68,21 @@ def run(command_names, config_path, list, dry_run, verbose):
                 command = _command
                 break
 
+        if (
+            command
+            and command.requires_virtualenv
+            and not os.environ.get("VIRTUAL_ENV")
+        ):
+            if verbose:
+                click.secho("Virtual environment for {command.name} could not be found")
+
+            return
+
         if not command and not config.disable_django_management_command:
             django_command_name = f"python manage.py {command_name}"
-            command = Command(execute=django_command_name, name=django_command_name)
+            command = objects.Command(
+                execute=django_command_name, name=django_command_name
+            )
 
         process_runner.run(command, dry_run)
 
@@ -119,12 +108,12 @@ def _get_config(config_filename, verbose):
     """
     Loads the config file and serializes it into a Config object.
     """
-    path = _get_config_path(config_filename, verbose)
-    config = Config(path=str(path))
+    config_file_path = _get_config_path(config_filename, verbose)
+    config = objects.Config(config_file_path=str(config_file_path))
 
-    if path:
+    if config_file_path:
         try:
-            with path.open() as dj_config_file:
+            with config_file_path.open() as dj_config_file:
                 dj_config_text = dj_config_file.read()
                 dj_config = json.loads(dj_config_text)
                 config.disable_django_management_command = dj_config.get(
@@ -132,8 +121,8 @@ def _get_config(config_filename, verbose):
                 )
 
                 for dj_command in dj_config.get("commands", []):
-                    command_name = dj_command.get("name")
-                    execute = dj_command.get("execute")
+                    command_name = dj_command.get("name", "").strip()
+                    execute = dj_command.get("execute", "").strip()
 
                     if not command_name:
                         if verbose:
@@ -147,23 +136,26 @@ def _get_config(config_filename, verbose):
 
                         continue
 
-                    command = Command(
+                    command = objects.Command(
                         name=command_name,
-                        help=dj_command.get("help"),
+                        help=dj_command.get("help", "").strip(),
                         execute=execute,
                         long_running=dj_command.get("long_running"),
+                        requires_virtualenv=dj_command.get("requires_virtualenv"),
                     )
 
                     config.commands.append(command)
 
             if verbose:
-                click.secho(f"Using {path} config file")
+                click.secho(f"Using {config_file_path} config file")
         except FileNotFoundError:
             if verbose:
                 click.secho(f"A {DJ_CONFIG_FILE_NAME} could not be found.", fg="yellow")
         except json.decoder.JSONDecodeError:
             if verbose:
-                click.secho(f"{path} does not appear to be valid JSON.", fg="yellow")
+                click.secho(
+                    f"{config_file_path} does not appear to be valid JSON.", fg="yellow"
+                )
 
     return config
 

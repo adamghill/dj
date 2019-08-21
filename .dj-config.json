@@ -3,19 +3,19 @@
 		{
 			"name": "m",
 			"help": "Does the migration dance",
-			"execute": "./manage.py makemigrations && ./manage.py migrate"
+			"execute": "./manage.py makemigrations && ./manage.py migrate",
+			"requires_virtualenv": true
 		},
 		{
 			"name": "r",
-			"help": "Runserver",
+			"help": "Runs all the servers",
 			"execute": "./manage.py runserver",
 			"long_running": true
 		},
 		{
 			"name": "ls",
-			"help": "ls",
+			"help": "Lists all the files, of course",
 			"execute": "ls",
-			"requires_virtualenv": false
 		},
 		{
 			"name": "up",
