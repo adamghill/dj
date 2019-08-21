@@ -24,7 +24,8 @@ Commands can be run sequentially by `dj` (e.g. `dj makemigrations migrate`). How
 			"execute": "./manage.py runserver",
 			"long_running": true
 		}
-	]
+	],
+	"disable_django_management_command": false  // prevent falling back to a Django management command cannot be found (optional, defaults to false)
 }
 ```
 
