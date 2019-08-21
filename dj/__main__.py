@@ -39,7 +39,7 @@ class Config(object):
     "--config",
     "config_path",
     default=DJ_CONFIG_FILE_NAME,
-    help="Specify the location of the config file (defaults to .dj-config in the current directory)",
+    help="Specify the location of the config file (defaults to .dj-config.json in the current directory)",
     type=click.Path(),
 )
 @click.option(

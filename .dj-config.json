@@ -19,7 +19,7 @@
 		{
 			"name": "up",
 			"help": "Up all the things",
-			"execute": "pip install -r requirements/development.txt && python manage.py migrate && python manage.py runserver",
+			"execute": "pip3 install -r requirements/development.txt && ./manage.py migrate && ./manage.py runserver",
 			"long_running": true
 		}
 	]
