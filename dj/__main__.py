@@ -16,25 +16,25 @@ DJ_CONFIG_FILE_NAME = ".dj-config.json"
     "--config",
     "config_path",
     default=DJ_CONFIG_FILE_NAME,
-    help="Specify the location of the config file (defaults to .dj-config.json in the current directory)",
+    help="Specify the location of the config file (defaults to .dj-config.json in the current directory).",
     type=click.Path(),
 )
 @click.option(
     "-l",
     "--list",
     default=False,
-    help="List the available custom commands and exits",
+    help="List the available custom commands and exits.",
     is_flag=True,
 )
 @click.option(
     "-d",
     "--dry_run",
     default=False,
-    help="Shows what commands would be run without actually running them",
+    help="Shows what commands would be run without actually running them.",
     is_flag=True,
 )
 @click.option(
-    "-v", "--verbose", default=False, help="Print out more information", is_flag=True
+    "-v", "--verbose", default=False, help="Print out more verbose information.", is_flag=True
 )
 @click.version_option(version=__version__)
 def run(command_names, config_path, list, dry_run, verbose):
