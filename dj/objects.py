@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import attr
 import click
@@ -48,6 +49,18 @@ class Config(object):
     file_path = attr.ib(default="")
     disable_django_management_command = attr.ib(default=False)
     python_interpreter = attr.ib(default="")
+    environment_file_path = attr.ib(default=".env")
+
+    @property
+    def dotenv_path(self):
+        dotenv_path = Path(self.environment_file_path)
+
+        if self.environment_file_path.startswith("~/"):
+            dotenv_path = Path.home().joinpath(
+                self.environment_file_path.replace("~/", "")
+            )
+
+        return dotenv_path
 
     @classmethod
     def from_path(cls, path, verbose):
@@ -68,15 +81,14 @@ class Config(object):
             try:
                 dj_config = json.loads(dj_config_text)
             except json.decoder.JSONDecodeError:
-                click.secho(
-                    f"{path} does not appear to be valid JSON.", fg="yellow"
-                )
+                click.secho(f"{path} does not appear to be valid JSON.", fg="yellow")
                 return config
 
             config.disable_django_management_command = dj_config.get(
                 "disable_django_management_command"
             )
             config.python_interpreter = dj_config.get("python_interpreter")
+            config.environment_file_path = dj_config.get("environment_file_path")
 
             for dj_command in dj_config.get("commands", []):
                 try:

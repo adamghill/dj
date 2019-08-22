@@ -5,6 +5,8 @@ from pathlib import Path
 import click
 from dj import __version__, objects, process_runner
 
+from dotenv import load_dotenv, find_dotenv
+
 DJ_CONFIG_FILE_PATH = ".dj-config.json"
 
 
@@ -45,6 +47,9 @@ def run(command_names, config_file_path, list, dry_run, verbose):
     Run commands with 🔥
     """
     config = _get_config(config_file_path, verbose)
+
+    # Parse .env file and load it into the envionment variables
+    load_dotenv(dotenv_path=config.dotenv_path)
 
     if list:
         for command in config.commands:

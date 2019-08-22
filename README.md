@@ -26,14 +26,24 @@ Commands can be run sequentially by `dj` (e.g. `dj makemigrations migrate`). How
 			"execute": "./manage.py runserver",
 			"long_running": true,
 			"requires_virtualenv": true
+		},
+		{
+			"name": "path",
+			"help": "Show the path from the environment variables",
+			"execute": "echo PATH environment variable is: $PATH"
 		}
 	],
 	"disable_django_management_command": false  // prevent falling back to a Django management command cannot be found (optional, defaults to false)
-	"python_interpreter": "python"  // Specify the Python interpreter (optional, defaults to "python")
+	"python_interpreter": "python"  // Specify the Python interpreter (optional, defaults to "python"),
+	"environment_file_path": ".env"  // Specify the path to an .env file (optional, defaults to ".env")
 }
 ```
 
+## Config file location
 `dj` will look in the current directory for `.dj-config.json` and then in `~/`, unless the `--config` argument is used to specify a particular file location.
+
+## Environment variables
+`dj` will look for a `.env` file to load environment variables using the wonderful [python-dotenv](https://github.com/theskumar/python-dotenv) library. You can specify environment variables in an execute command just like you would from the shell (i.e. `$VARIABLE_NAME`).
 
 # Basic arguments and options
 - `dj --help` to see all of the options
@@ -54,6 +64,7 @@ Commands can be run sequentially by `dj` (e.g. `dj makemigrations migrate`). How
 - [click](https://click.palletsprojects.com/): ridiculously full-featured library to help implement CLI programs in Python; it has all the bells and most of the whistles
 - [attrs](https://www.attrs.org/): would you like easy classes in Python? yes, please
 - [delegator.py](https://github.com/amitt001/delegator.py): dealing with subprocess is a pain, but delegator hides all the ugly cruft behind a nice API
+- [python-dotenv](https://github.com/theskumar/python-dotenv): 12-factor all the things with .env files
 
 # Prior art
 This isn't a new idea and there are a few other implementations out there that do similar things. But, uh, I like mine. 😀
