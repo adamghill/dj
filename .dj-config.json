@@ -24,8 +24,19 @@
 			"execute": "pip3 install -r requirements/development.txt && ./manage.py migrate && ./manage.py runserver",
 			"requires_virtualenv": true,
 			"long_running": true
+		},
+		{
+			"name": "restore_database",
+			"help": "Restores a Postgres database from live to local",
+			"execute": "PGPASSWORD=$PGPASSWORD pg_dump $DATABASE_NAME --host=$DATABASE_HOST --port=$DATABASE_PORT --username=$DATABASE_USERNAME --format=tar | pg_restore --clean --dbname=$DATABASE_NAME --no-owner --host=localhost --port=5432"
+		},
+		{
+			"name": "path",
+			"help": "Show the path from the environment variables",
+			"execute": "echo PATH environment variable is: $PATH"
 		}
 	],
 	"disable_django_management_command": false,
-	"python_interpreter": "python"
+	"python_interpreter": "python",
+	"environment_file_path": ".env"
 }

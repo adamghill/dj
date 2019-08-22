@@ -16,6 +16,7 @@ click = "^7.0"
 "delegator.py" = "^0.1.1"
 attrs = "^19.1"
 colorama = "^0.4.1"
+python-dotenv = "^0.10.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
