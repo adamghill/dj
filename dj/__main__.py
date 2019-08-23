@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 import os
-from pathlib import Path
 
 import click
-from dj import __version__, objects, process_runner
+from dj import __version__, config_loader, objects, process_runner
 
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 
 DJ_CONFIG_FILE_PATH = ".dj-config.json"
+TOML_DJ_CONFIG_FILE_PATH = ".dj-config.toml"
 
 
 @click.command()
@@ -46,7 +46,7 @@ def run(command_names, config_file_path, list, dry_run, verbose):
     """
     Run commands with 🔥
     """
-    config = _get_config(config_file_path, verbose)
+    config = config_loader.get_config(config_file_path, verbose)
 
     # Parse .env file and load it into the envionment variables
     load_dotenv(dotenv_path=config.dotenv_path)
@@ -96,39 +96,6 @@ def run(command_names, config_file_path, list, dry_run, verbose):
 
         if command:
             process_runner.run(command, dry_run)
-
-
-def _get_config_path(config_file_path, verbose):
-    """
-    Gets the path of the config file based on the default locations.
-    """
-    paths = [Path(config_file_path), Path.home().joinpath(DJ_CONFIG_FILE_PATH)]
-
-    if paths[0] != Path(DJ_CONFIG_FILE_PATH):
-        paths.insert(1, Path(DJ_CONFIG_FILE_PATH))
-
-    for path in paths:
-        if path.exists():
-            return path
-
-        if verbose:
-            click.secho(f"{path} does not exist.", fg="yellow")
-
-
-def _get_config(config_file_path, verbose):
-    """
-    Loads the config file and serializes it into a Config object.
-    """
-    config_path = _get_config_path(config_file_path, verbose)
-
-    if not config_path:
-        if verbose:
-            click.secho("Config file could not be found.", fg="yellow")
-
-        # Default to an empty config because a config file could not be found.
-        return objects.Config()
-
-    return objects.Config.from_path(config_path, verbose)
 
 
 if __name__ == "__main__":

@@ -63,39 +63,25 @@ class Config(object):
         return dotenv_path
 
     @classmethod
-    def from_path(cls, path, verbose):
+    def from_dict(cls, data, verbose):
         """
-        Creates a config object based on a file path.
+        Creates a config object from a data dictionary.
         """
-        assert path, "Config file path is not valid."
+        assert data, "Data dictionary is not valid."
 
-        if verbose:
-            click.secho(f"Using {path} config file")
+        config = Config()
+        config.disable_django_management_command = data.get(
+            "disable_django_management_command"
+        )
+        config.python_interpreter = data.get("python_interpreter")
+        config.environment_file_path = data.get("environment_file_path")
 
-        config = Config(file_path=str(path))
-
-        with path.open() as dj_config_file:
-            dj_config_text = dj_config_file.read()
-            dj_config = {}
-
+        for dj_command in data.get("commands", []):
             try:
-                dj_config = json.loads(dj_config_text)
-            except json.decoder.JSONDecodeError:
-                click.secho(f"{path} does not appear to be valid JSON.", fg="yellow")
-                return config
-
-            config.disable_django_management_command = dj_config.get(
-                "disable_django_management_command"
-            )
-            config.python_interpreter = dj_config.get("python_interpreter")
-            config.environment_file_path = dj_config.get("environment_file_path")
-
-            for dj_command in dj_config.get("commands", []):
-                try:
-                    command = Command.from_dict(dj_command, verbose)
-                    config.commands.append(command)
-                except AssertionError as e:
-                    if verbose:
-                        click.secho(str(e), fg="red")
+                command = Command.from_dict(dj_command, verbose)
+                config.commands.append(command)
+            except AssertionError as e:
+                if verbose:
+                    click.secho(str(e), fg="red")
 
         return config
