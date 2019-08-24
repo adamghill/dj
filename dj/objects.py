@@ -62,6 +62,11 @@ class Config(object):
         return dotenv_path
 
     @classmethod
+    def _add_data_to_config(cls, data, config, name):
+        if data.get(name):
+            setattr(config, name, data.get(name))
+
+    @classmethod
     def from_dict(cls, data, verbose):
         """
         Creates a config object from a data dictionary.
@@ -69,11 +74,10 @@ class Config(object):
         assert data, "Data dictionary is not valid."
 
         config = Config()
-        config.disable_django_management_command = data.get(
-            "disable_django_management_command"
-        )
-        config.python_interpreter = data.get("python_interpreter")
-        config.environment_file_path = data.get("environment_file_path")
+
+        Config._add_data_to_config(data, config, "disable_django_management_command")
+        Config._add_data_to_config(data, config, "python_interpreter")
+        Config._add_data_to_config(data, config, "environment_file_path")
 
         for dj_command in data.get("commands", []):
             try:
