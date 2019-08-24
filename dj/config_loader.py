@@ -6,7 +6,7 @@ import toml
 from dj import objects
 
 DJ_CONFIG_FILE_NAME = ".dj-config"
-DJ_CONFIG_FILE_EXTENSIONS = [".toml", "json"]
+DJ_CONFIG_FILE_EXTENSIONS = [".toml", ".json"]
 DEFAULT_DJ_CONFIG_FILE_PATH = f"{DJ_CONFIG_FILE_NAME}.toml"
 
 
