@@ -1,0 +1,34 @@
+disable_django_management_command = false
+python_interpreter = "python"
+environment_file_path = ".env"
+
+[[commands]]
+name = "m"
+help = "Does the migration dance"
+execute = "./manage.py makemigrations && ./manage.py migrate"
+requires_virtualenv = true
+
+[[commands]]
+name = "r"
+help = "Runs all the servers"
+execute = "./manage.py runserver"
+requires_virtualenv = true
+long_running = true
+
+[[commands]]
+name = "ls"
+help = "Lists all the files, of course"
+execute = "ls"
+
+[[commands]]
+name = "up"
+help = "Up all the things"
+execute = "pip3 install -r requirements/development.txt && ./manage.py migrate && ./manage.py runserver"
+requires_virtualenv = true
+long_running = true
+
+[[commands]]
+name = "restore_database"
+help = "Restores a Postgres database from live to local"
+execute = "PGPASSWORD=$PGPASSWORD pg_dump $DATABASE_NAME --host=$DATABASE_HOST --port=$DATABASE_PORT --username=$DATABASE_USERNAME --format=tar | pg_restore --clean --dbname=$DATABASE_NAME --no-owner --host=localhost --port=5432"
+

@@ -17,6 +17,7 @@ click = "^7.0"
 attrs = "^19.1"
 colorama = "^0.4.1"
 python-dotenv = "^0.10.3"
+toml = "^0.10.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
