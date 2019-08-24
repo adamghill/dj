@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dj-command"
-version = "0.5.0"
+version = "0.5.1"
 description = "Run commands with `dj {command_name}`. Uses aliases defined in a simple config file or defaults to Django management commands."
 authors = ["Adam Hill <adamghill@yahoo.com>"]
 include = [".dj-config.json"]

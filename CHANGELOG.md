@@ -1,3 +1,6 @@
+# 0.5.1
+- Fix dumb bug
+
 # 0.5.0
 - Add support for TOML config files because, hey, at least it's better than JSON
 - Merge config files in a somewhat sane way
