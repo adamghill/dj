@@ -1,4 +1,9 @@
 # 0.5.0
+- Add support for TOML config files because, hey, at least it's better than JSON
+- Merge config files in a somewhat sane way
+- Add version argument
+- Add `python_interpreter` to command config
+- Add loading environment variables from an .env file
 
 # 0.4.0
 - Add `requires_virtualenv` to command config
