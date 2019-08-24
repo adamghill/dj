@@ -4,11 +4,10 @@ from pathlib import Path
 import click
 import toml
 from dj import objects
-from dj.__main__ import (
-    DEFAULT_DJ_CONFIG_FILE_PATH,
-    DJ_CONFIG_FILE_EXTENSIONS,
-    DJ_CONFIG_FILE_NAME,
-)
+
+DJ_CONFIG_FILE_NAME = ".dj-config"
+DJ_CONFIG_FILE_EXTENSIONS = [".toml", "json"]
+DEFAULT_DJ_CONFIG_FILE_PATH = f"{DJ_CONFIG_FILE_NAME}.toml"
 
 
 def _merge_dj_config(path, existing_dj_config, new_dj_config, verbose):

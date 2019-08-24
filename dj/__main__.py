@@ -6,10 +6,6 @@ from dj import __version__, config_loader, objects, process_runner
 
 from dotenv import load_dotenv
 
-DJ_CONFIG_FILE_NAME = ".dj-config"
-DJ_CONFIG_FILE_EXTENSIONS = [".toml", "json"]
-DEFAULT_DJ_CONFIG_FILE_PATH = f"{DJ_CONFIG_FILE_NAME}.toml"
-
 
 @click.command()
 @click.argument("command_names", nargs=-1)
@@ -17,7 +13,7 @@ DEFAULT_DJ_CONFIG_FILE_PATH = f"{DJ_CONFIG_FILE_NAME}.toml"
     "-c",
     "--config",
     "config_file_path",
-    default=DEFAULT_DJ_CONFIG_FILE_PATH,
+    default=config_loader.DEFAULT_DJ_CONFIG_FILE_PATH,
     help="Specify the location of the config file (defaults to .dj-config.json in the current directory).",
     type=click.Path(),
 )
