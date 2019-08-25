@@ -1,5 +1,8 @@
+# 0.5.2
+- Fix loading json config file bug
+
 # 0.5.1
-- Fix dumb bug
+- Fix dumb import bug
 
 # 0.5.0
 - Add support for TOML config files because, hey, at least it's better than JSON
