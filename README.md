@@ -1,5 +1,5 @@
 # Why?
-It is available everywhere if you install via `pip`, has cute aliases defined in a JSON file (`.dj-config.json`) per project, will run as many commands as you want, and defaults to Django management commands if an alias cannot be found.
+It is available everywhere if you install via `pip`, has cute aliases defined in a TOML/JSON file (`.dj-config.toml` or `.dj-config.json`) per project, will run as many commands as you want, and defaults to Django management commands if an alias cannot be found.
 
 Commands can be run sequentially by `dj` (e.g. `dj makemigrations migrate`). However, calling a long-running process (e.g. `dj runserver`) will prevent any other commands from being run. For example, `dj runserver migrate` will never run the `migrate` command because `runserver` will block the process.
 
