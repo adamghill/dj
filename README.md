@@ -45,7 +45,7 @@ execute = "PGPASSWORD=$PGPASSWORD pg_dump $DATABASE_NAME --host=$DATABASE_HOST -
 ## Config file location
 If the `--config` argument is used to specify a particular file location, that is the only place `dj` looks for a configuration file.
 
-Otherwise, `dj` will search for appropriate config files and "merge" them together. This allows you to have a base config file in `~/.dj-config.toml`, but override it on a per-folder basis. `dj` prioritizes `.toml` config files over `.json`. So, it will look for `~/.dj-config.toml` first and, if it's missing, then look for `~/.dj-config.json`. Then, it will follow the same pattern for the current directory. The current directory's config file will take precedence if there is an overlap in configuration settings.
+Otherwise, `dj` will search for appropriate config files and "merge" them together. This allows you to have a base config file in `~/.dj-config.toml`, but override it on a per-folder basis. `dj` prioritizes `.toml` config files over `.json`, so it will look for `~/.dj-config.toml` first and, if it's missing, then look for `~/.dj-config.json`. Then, it will follow the same pattern for the current directory. The current directory's config file will take precedence if there is an overlap in configuration settings.
 
 ## Using environment variables in commands
 `dj` will look for a `.env` file to load environment variables using the wonderful [python-dotenv](https://github.com/theskumar/python-dotenv) library. You can specify environment variables in an execute command just like you would from the shell (i.e. `$VARIABLE_NAME`).
